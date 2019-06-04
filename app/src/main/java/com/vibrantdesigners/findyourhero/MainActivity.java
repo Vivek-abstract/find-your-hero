@@ -26,7 +26,8 @@ import java.util.GregorianCalendar;
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     int day = -1, month = -1, year = -1;
-    String dateOfBirth;
+    String dateOfBirthString;
+    Date dateOfBirth;
 
     int heroeDescriptions[] = new int[]{
             R.string.thanos,
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             R.string.drstrange
     };
 
-    String heroNames[] = new String[] {
+    String heroNames[] = new String[]{
             "Thanos",
             "Groot",
             "Thor",
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             "Dr. Strange"
     };
 
-    int heroImages[] = new int[] {
+    int heroImages[] = new int[]{
             R.drawable.thanos,
             R.drawable.groot,
             R.drawable.thor,
@@ -100,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 if (day == -1 || month == -1 || year == -1) {
                     // TODO: Show invalid alert
                     Toast.makeText(getApplicationContext(), "Please select your birthdate", Toast.LENGTH_SHORT).show();
+                } else if (dateOfBirth.after(new Date())) {
+                    Toast.makeText(getApplicationContext(), "You can't be born in the future!", Toast.LENGTH_SHORT).show();
                 } else {
                     String md5 = md5(day + "/" + month + "/" + year);
                     Log.d("Hello", md5);
@@ -110,13 +113,13 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                     int heroDescId = heroeDescriptions[heroID];
                     int heroImg = heroImages[heroID];
 
-                    Log.d("Hello", dateOfBirth);
+                    Log.d("Hello", dateOfBirthString);
 
                     Intent intent = new Intent(MainActivity.this, HeroInfo.class);
                     intent.putExtra("heroName", heroName);
                     intent.putExtra("heroDescId", heroDescId);
                     intent.putExtra("heroImg", heroImg);
-                    intent.putExtra("dateOfBirth", dateOfBirth);
+                    intent.putExtra("dateOfBirth", dateOfBirthString);
 
                     startActivity(intent);
                 }
@@ -140,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            Intent intent = new Intent(MainActivity.this, AboutUs.class);
+            startActivity(intent);
+
             return true;
         }
 
@@ -164,11 +171,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         TextView dateTextView = findViewById(R.id.dateTextView);
 
-        Date date = new GregorianCalendar(year, month, day).getTime();
+        dateOfBirth = new GregorianCalendar(year, month, day).getTime();
+        dateOfBirthString = new SimpleDateFormat("dd/MM/yyyy").format(dateOfBirth);
 
-        dateOfBirth = new SimpleDateFormat("dd/MM/yyyy").format(date);
-
-        dateTextView.setText(dateOfBirth);
+        dateTextView.setText(dateOfBirthString);
         dateTextView.setVisibility(View.VISIBLE);
 
         Button selectDateButton = findViewById(R.id.datePickerButton);
